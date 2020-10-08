@@ -38,21 +38,19 @@ const BookPage = () => {
         }}
       />
       <TouchableOpacity style={styles.cameraButton}>
-        <Icon name="photo-camera" size={18} color="#fff" />
+        <Icon name="photo-camera" size={30} color="#fff" />
       </TouchableOpacity>
+      <View style={styles.optionsButtons}>
+        <TouchableOpacity style={[styles.defaultButton, styles.cancelButton]} onPress={handleNavigateBack}>
+          <Icon name="block" size={30} color="#fff" />
+          <Text style={styles.textButton}>Cancelar</Text>
+        </TouchableOpacity>
         
-      <TouchableOpacity 
-        style={styles.saveButton}
-        onPress={onSave}
-      >
-        <Text style={styles.saveButtonText}>Cadastrar</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.cancelButton}
-        onPress={handleNavigateBack}
-      >
-        <Text style={styles.cancelButtonText}>Cancelar</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={[styles.defaultButton, styles.saveButton]} onPress={onSave}>
+          <Icon name="done" size={30} color="#fff" />
+          <Text style={styles.textButton}>Cadastrar</Text>
+        </TouchableOpacity>
+      </View>  
     </View>
   );
 };
@@ -65,11 +63,13 @@ const styles = StyleSheet.create({
   },
   pageTitle: {
     textAlign: 'center',
+    color: '#0097e6',
     fontSize: 22,
     marginBottom: 20
   },
   input: {
     fontSize: 22,
+    color: '#fff',
     borderColor: 'transparent',
     borderBottomColor: '#f39c12',
     borderWidth: 1,
@@ -78,33 +78,35 @@ const styles = StyleSheet.create({
   cameraButton: {
     backgroundColor: '#f39c12',
     borderRadius: 50,
-    width: 32,
-    height:32,
+    width: 60,
+    height:60,
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
-    marginBottom: 20,
+    marginVertical: 30,
   },
-  saveButton: {
-    backgroundColor:'#f39c12',
-    alignSelf: 'center',
+  optionsButtons: {
+    flexDirection: 'row',
+    alignContent: 'space-between'
+  },
+  defaultButton: {
     borderRadius: 8,
+    flexDirection: 'row',
     paddingHorizontal: 20,
     paddingVertical: 10,
     marginBottom: 20,
   },
-  saveButtonText: {
+  saveButton: {
+    backgroundColor:'#44bd32',
+  },
+  textButton: {
     color: '#fff',
     fontSize: 22,
     fontWeight: 'bold',
   },
   cancelButton: {
-    alignSelf: 'center',
+    backgroundColor:'#f39c12',
+    marginRight:20
   },
-  cancelButtonText: {
-    color: '#95a5a6',
-    fontSize: 22,
-    fontWeight: 'bold',
-  }
 })
 export default BookPage;

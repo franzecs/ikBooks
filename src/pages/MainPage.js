@@ -39,8 +39,7 @@ const MainPage = () => {
         <TouchableOpacity 
           style={styles.toolboxButton}
           onPress={handleNavigateToBook}  
-        >
-          
+        > 
           <Icon name="add" size={30} color="#fff" />
         </TouchableOpacity>
       </View>
@@ -48,9 +47,15 @@ const MainPage = () => {
         data={data}   
         keyExtractor={item => item.id} 
         renderItem={({item}) => (
-          <TouchableOpacity style={styles.itemButton}>
-            <Text style={styles.itemText}>{item.title}</Text>
-          </TouchableOpacity>
+          <View style={styles.itemGroup}>
+            <TouchableOpacity style={styles.itemButton}>
+              <Icon name="book" size={30} color="#fff" />
+              <Text style={styles.itemText}>{item.title}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconEndButton}>
+              <Icon name="edit" size={30} color="#fff" />
+            </TouchableOpacity>
+          </View>
         )} 
        />
     </View>
@@ -60,21 +65,21 @@ const MainPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f1f1f1',
     padding: 10
   },
   toolbox: {
     flexDirection: "row",
     marginVertical: 10,
+    marginBottom:30
   },
   header: {
     flex: 1,
     fontWeight: 'bold',
     fontSize: 22,
-    color: '#3498db'
+    color: '#0097e6'
   },
   toolboxButton: {
-    backgroundColor: '#3498db',
+    backgroundColor: '#0097e6',
     borderRadius: 50,
     width: 30,
     height:30,
@@ -82,10 +87,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   itemButton: {
-
+    flexDirection: 'row',
+    flex: 6,
+    backgroundColor: '#7f8fa6',
+    marginRight: 5,
+    paddingLeft: 5,
+    borderRadius: 10
   },
   itemText: {
-    fontSize: 22
+    textShadowColor: '#000',
+    fontSize: 22,
+    color: '#fff',
+    marginBottom: 5,
+  },
+  itemGroup: {
+    flexDirection: 'row',
+    marginBottom: 10
+  },
+  iconEndButton: {
+   backgroundColor: '#0097e6',
+   borderRadius: 10
   }
 })
 

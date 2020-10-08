@@ -10,7 +10,14 @@ const AppStack = createStackNavigator();
 const Routes = () => {
   return(
     <NavigationContainer>
-      <AppStack.Navigator headerMode="none">
+      <AppStack.Navigator 
+        headerMode="none"
+        screenOptions={{
+          cardStyle: {
+            backgroundColor: '#000'
+          }
+        }}
+        >
         <AppStack.Screen name="Main" component={MainPage}/>
         <AppStack.Screen name="Book" component={BookPage}/>
       </AppStack.Navigator>
