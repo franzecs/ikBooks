@@ -1,7 +1,9 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { FlatList, View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import Icon from "react-native-vector-icons/MaterialIcons"
+import StorageService from '../sevices/StorageService';
 
 const MainPage = () => {
   const navigation = useNavigation();
@@ -9,29 +11,14 @@ const MainPage = () => {
     navigation.navigate('Book');
   }
 
-  const data = [
-    {
-      id: "1",
-      title: "Código Limpo",
-      anotations: "Livro muito bom!",
-      read: false,
-      photo: null,
-    },
-    {
-      id: "2",
-      title: "C Completo e total",
-      anotations: "Livro muito bom!",
-      read: false,
-      photo: null,
-    },
-    {
-      id: "3",
-      title: "A Biblia do PHP",
-      anotations: "Livro muito bom!",
-      read: false,
-      photo: null,
-    }
-  ]
+  const [books, setBooks] = useState([])
+
+  useEffect(()=> {
+   StorageService.getItens('books').then(data => {
+     setBooks(data)
+   })
+  }, [books]);
+  
   return(
     <View style={styles.container}>
       <View style={styles.toolbox}>
@@ -44,7 +31,7 @@ const MainPage = () => {
         </TouchableOpacity>
       </View>
       <FlatList 
-        data={data}   
+        data={books}   
         keyExtractor={item => item.id} 
         renderItem={({item}) => (
           <View style={styles.itemGroup}>

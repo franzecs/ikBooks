@@ -1,18 +1,53 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
 import Icon from "react-native-vector-icons/MaterialIcons"
 
+import StorageService from '../sevices/StorageService';
+
 const BookPage = () => {
   const navigation = useNavigation();
+
+  const [books, setBooks] = useState([])
   const [title, setTitle] = useState('');
   const [anotations, setAnotations]  = useState('');
   const [read, setRead]  = useState(false);
   const [photo, setPhoto] = useState('');
 
-  const onSave = () => {
-    alert(title);
+
+  useEffect(() => {   
+    StorageService.getItens('books').then(data => {
+      setBooks(data)
+    })
+  }, [])
+
+
+  const isValid = () => {
+    if((title !== null) && (title !== '')) {
+      return true;
+    }
+    return false;
+  }
+
+
+  const onSave = async() => {
+    if(isValid()) {
+      const id = Math.random().toString();
+      const data = {
+        id,
+        title,
+        anotations,
+        photo,
+      }
+
+      books.push(data)
+      await StorageService.save('books', books)
+      navigation.goBack();
+    } else {
+      alert('Dados inválidos')
+    }
   }
   const handleNavigateBack = () => {
     navigation.goBack();
@@ -46,7 +81,10 @@ const BookPage = () => {
           <Text style={styles.textButton}>Cancelar</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={[styles.defaultButton, styles.saveButton]} onPress={onSave}>
+        <TouchableOpacity 
+          style={[styles.defaultButton, styles.saveButton, (!isValid())? styles.saveButtonInvalid : null]} 
+          onPress={onSave}
+          >
           <Icon name="done" size={30} color="#fff" />
           <Text style={styles.textButton}>Cadastrar</Text>
         </TouchableOpacity>
@@ -87,7 +125,7 @@ const styles = StyleSheet.create({
   },
   optionsButtons: {
     flexDirection: 'row',
-    alignContent: 'space-between'
+    justifyContent: "space-between",
   },
   defaultButton: {
     borderRadius: 8,
@@ -99,6 +137,10 @@ const styles = StyleSheet.create({
   saveButton: {
     backgroundColor:'#44bd32',
   },
+  saveButtonInvalid: {
+    backgroundColor:'#552255',
+    opacity: 0.5
+  },  
   textButton: {
     color: '#fff',
     fontSize: 22,
@@ -106,7 +148,6 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     backgroundColor:'#f39c12',
-    marginRight:20
   },
 })
 export default BookPage;
