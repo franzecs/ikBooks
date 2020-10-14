@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import Icon from "react-native-vector-icons/MaterialIcons"
 
@@ -9,12 +8,25 @@ import StorageService from '../sevices/StorageService';
 
 const BookPage = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+
+  const book = (route.params !== undefined && route.params['book'] !== undefined)
+      ? route.params['book'] 
+      : {
+        title: '',
+        anotations: '',
+        read: false,
+        photo: ''
+      }
+  
+  const isEdit = (route.params !== undefined && route.params['isEdit'] !== undefined)
+      ? route.params['isEdit'] : false 
 
   const [books, setBooks] = useState([])
-  const [title, setTitle] = useState('');
-  const [anotations, setAnotations]  = useState('');
-  const [read, setRead]  = useState(false);
-  const [photo, setPhoto] = useState('');
+  const [title, setTitle] = useState(book.title);
+  const [anotations, setAnotations]  = useState(book.anotations);
+  const [read, setRead]  = useState(book.read);
+  const [photo, setPhoto] = useState(book.photo);
 
 
   useEffect(() => {   
@@ -34,16 +46,30 @@ const BookPage = () => {
 
   const onSave = async() => {
     if(isValid()) {
-      const id = Math.random().toString();
-      const data = {
-        id,
-        title,
-        anotations,
-        photo,
-      }
+      if(isEdit) {
+        let newBooks = books;
 
-      books.push(data)
-      await StorageService.save('books', books)
+        newBooks.map(item => {
+          if(item.id === book.id) {
+            item.title = title;
+            item.anotations = anotations;
+            item.read = read;
+            item.photo = photo;
+          }
+          return item;
+        })
+        await StorageService.save('books', newBooks);
+      }else {
+        const id = ((Math.random())*100) .toString();
+        const data = {
+          id,
+          title,
+          anotations,
+          photo,
+        }
+        books.push(data)
+        await StorageService.save('books', books)
+      }
       navigation.goBack();
     } else {
       alert('Dados inválidos')
@@ -86,7 +112,7 @@ const BookPage = () => {
           onPress={onSave}
           >
           <Icon name="done" size={30} color="#fff" />
-          <Text style={styles.textButton}>Cadastrar</Text>
+          <Text style={styles.textButton}>{isEdit ? "Atualizar" : "Cadastrar"}</Text>
         </TouchableOpacity>
       </View>  
     </View>

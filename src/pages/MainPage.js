@@ -11,13 +11,35 @@ const MainPage = () => {
     navigation.navigate('Book');
   }
 
+  const onBookEdit = (bookId) => {
+    const book = books.find(item => item.id === bookId);
+    navigation.navigate('Book', {book: book, isEdit: true})
+  }
+
+  const onBookDelete = async (bookId) => {
+    const newBook = books.filter(item => item.id !== bookId);
+    await StorageService.save('books', newBook);
+    setBooks(newBook);
+  }
+
+  const onBookRead = async(bookId) =>{
+    const newBooks = books.map(item => {
+      if(item.id === bookId) {
+        item.read = !item.read;
+      }
+      return item;
+    })
+    await StorageService.save('books', newBooks);
+    setBooks(newBooks);
+  }
+
   const [books, setBooks] = useState([])
 
   useEffect(()=> {
    StorageService.getItens('books').then(data => {
      setBooks(data)
    })
-  }, [books]);
+  }, []);
   
   return(
     <View style={styles.container}>
@@ -35,12 +57,26 @@ const MainPage = () => {
         keyExtractor={item => item.id} 
         renderItem={({item}) => (
           <View style={styles.itemGroup}>
-            <TouchableOpacity style={styles.itemButton}>
+            <TouchableOpacity 
+              style={styles.itemButton}
+              onPress={() =>onBookRead(item.id)}
+              >
               <Icon name="book" size={30} color="#fff" />
-              <Text style={styles.itemText}>{item.title}</Text>
+              <Text style={[styles.itemText, item.read ? styles.itemRead : null]}>{item.title}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.iconEndButton}>
+
+            <TouchableOpacity 
+              style={styles.iconEndButton}
+              onPress={() =>onBookEdit(item.id)}
+              >
               <Icon name="edit" size={30} color="#fff" />
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.iconEndButton}
+              onPress={() =>onBookDelete(item.id)}
+              >
+              <Icon name="delete" size={30} color="#e74c3c" />
             </TouchableOpacity>
           </View>
         )} 
@@ -75,10 +111,12 @@ const styles = StyleSheet.create({
   },
   itemButton: {
     flexDirection: 'row',
-    flex: 6,
-    backgroundColor: '#7f8fa6',
     marginRight: 5,
-    paddingLeft: 5,
+    paddingHorizontal: 5,
+    borderWidth: 1,
+    borderColor: '#fff',
+    borderTopWidth: 0,
+    borderRightWidth: 0,
     borderRadius: 10
   },
   itemText: {
@@ -87,13 +125,19 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginBottom: 5,
   },
+  itemRead: {
+    textDecorationLine: 'line-through',
+    color: '#95a5a6'
+  },
   itemGroup: {
     flexDirection: 'row',
     marginBottom: 10
   },
   iconEndButton: {
-   backgroundColor: '#0097e6',
-   borderRadius: 10
+    borderColor:'#fff',
+    borderWidth: 1,
+    borderRadius: 10,
+    marginHorizontal: 10,
   }
 })
 
