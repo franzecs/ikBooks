@@ -1,8 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import { FlatList, View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import Constants from 'expo-constants';
+
 import Icon from "react-native-vector-icons/MaterialIcons"
+
 import StorageService from '../sevices/StorageService';
 
 const MainPage = () => {
@@ -26,6 +28,7 @@ const MainPage = () => {
     const newBooks = books.map(item => {
       if(item.id === bookId) {
         item.read = !item.read;
+        alert(JSON.stringify(item));
       }
       return item;
     })
@@ -39,7 +42,7 @@ const MainPage = () => {
    StorageService.getItens('books').then(data => {
      setBooks(data)
    })
-  }, []);
+  }, [books]);
   
   return(
     <View style={styles.container}>
@@ -61,7 +64,6 @@ const MainPage = () => {
               style={styles.itemButton}
               onPress={() =>onBookRead(item.id)}
               >
-              <Icon name="book" size={30} color="#fff" />
               <Text style={[styles.itemText, item.read ? styles.itemRead : null]}>{item.title}</Text>
             </TouchableOpacity>
 
@@ -88,7 +90,8 @@ const MainPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10
+    padding: 5,
+    paddingTop: Constants.statusBarHeight,
   },
   toolbox: {
     flexDirection: "row",
@@ -113,16 +116,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginRight: 5,
     paddingHorizontal: 5,
-    borderWidth: 1,
-    borderColor: '#fff',
-    borderTopWidth: 0,
-    borderRightWidth: 0,
-    borderRadius: 10
   },
   itemText: {
-    textShadowColor: '#000',
-    fontSize: 22,
-    color: '#fff',
+    fontSize: 26,
+    color: '#000',
     marginBottom: 5,
   },
   itemRead: {
@@ -131,13 +128,16 @@ const styles = StyleSheet.create({
   },
   itemGroup: {
     flexDirection: 'row',
-    marginBottom: 10
+    justifyContent: 'space-between',
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#d7dd75'
   },
   iconEndButton: {
     borderColor:'#fff',
     borderWidth: 1,
     borderRadius: 10,
-    marginHorizontal: 10,
+    // marginHorizontal: 10,
   }
 })
 

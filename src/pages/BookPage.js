@@ -1,10 +1,13 @@
 import React, {useEffect, useState} from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Modal } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import Constants from 'expo-constants';
 
 import Icon from "react-native-vector-icons/MaterialIcons"
 
 import StorageService from '../sevices/StorageService';
+import Camera from '../components/Camera';
+import Photo from '../components/Photo';
 
 const BookPage = () => {
   const navigation = useNavigation();
@@ -16,7 +19,7 @@ const BookPage = () => {
         title: '',
         anotations: '',
         read: false,
-        photo: ''
+        photo: null
       }
   
   const isEdit = (route.params !== undefined && route.params['isEdit'] !== undefined)
@@ -27,7 +30,7 @@ const BookPage = () => {
   const [anotations, setAnotations]  = useState(book.anotations);
   const [read, setRead]  = useState(book.read);
   const [photo, setPhoto] = useState(book.photo);
-
+  const [isModalVisible, setIsModalVisible] = useState(false);   
 
   useEffect(() => {   
     StorageService.getItens('books').then(data => {
@@ -35,14 +38,12 @@ const BookPage = () => {
     })
   }, [])
 
-
   const isValid = () => {
     if((title !== null) && (title !== '')) {
       return true;
     }
     return false;
   }
-
 
   const onSave = async() => {
     if(isValid()) {
@@ -75,6 +76,16 @@ const BookPage = () => {
       alert('Dados inválidos')
     }
   }
+
+  const onCloseModal = async () =>{
+    await onSave();
+    setIsModalVisible(false);
+  }
+
+  const onChagePhoto = (newPhoto) => {
+    setPhoto(newPhoto);
+  }
+
   const handleNavigateBack = () => {
     navigation.goBack();
   }
@@ -98,7 +109,12 @@ const BookPage = () => {
           setAnotations(text)
         }}
       />
-      <TouchableOpacity style={styles.cameraButton}>
+      <TouchableOpacity 
+        style={styles.cameraButton}
+        onPress={()=> {
+          setIsModalVisible(true);
+        }}
+        >
         <Icon name="photo-camera" size={30} color="#fff" />
       </TouchableOpacity>
       <View style={styles.optionsButtons}>
@@ -115,6 +131,24 @@ const BookPage = () => {
           <Text style={styles.textButton}>{isEdit ? "Atualizar" : "Cadastrar"}</Text>
         </TouchableOpacity>
       </View>  
+      <Modal 
+        animationType="slide"
+        visible={isModalVisible}
+      >
+        {
+          photo 
+            ? (<Photo 
+                photo={photo}
+                onDeletePhoto={ onChagePhoto }
+                onClosePicture={ onCloseModal }
+                ></Photo>)
+            : (<Camera 
+                onCloseCamera={()=> setIsModalVisible(false)}
+                onTakePicture= {onChagePhoto}
+                ></Camera>) 
+        }
+
+      </Modal>
     </View>
   );
 };
@@ -123,6 +157,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    paddingTop: Constants.statusBarHeight,
     marginTop: 10,
   },
   pageTitle: {
